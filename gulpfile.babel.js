@@ -66,8 +66,6 @@ const paths = {
         './src/fonts/**/*.{ttf,woff,woff2,eof,svg}': 'fonts',
         './bower_components/font-awesome/fonts/**/*.{ttf,woff,woff2,eof,svg}': 'fonts',
 
-        '../test.css': 'css',
-
         // image files
         './src/images/**/*.{png,gif,jpg,jpeg,svg}': 'images'
     }
