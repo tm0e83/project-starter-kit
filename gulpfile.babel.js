@@ -13,13 +13,17 @@ import watchify from 'watchify';
 import buffer from 'vinyl-buffer';
 
 const $ = gulpLoadPlugins();
+
+// Options
 const useBrowserSync = false;
 const devEnvironment = 'local'; // local|zend
 const paths = {
-    /* Output directory */
+    /* Output directory
+     * description: The target folder for all processed files. */
     outDir: './dist',
 
     /* SCSS Imports
+     * description: Tells the sass compiler where to find the imported scss files.
      * allowed file types: *.scss
      * outDir: {paths.outDir}/css */
     sassImports: [
@@ -33,11 +37,14 @@ const paths = {
      * allowed file types: *.js
      * outDir: {paths.outDir}/* */
     js: {
-        './src/js/app.js': 'js',
-        './src/js/test.js': 'js'
+        './src/js/app.js': 'js'
     },
 
     /* other files | libs
+     * description:
+     *   Source and target paths of various file types.
+     *   Typically stylesheet and image files are minified.
+     *   All other file types are simply copied over to the target folder.
      * usage: {... sourcePath: targetPath, ... }
      * allowed file types: *.*, !*.scss
      * outDir: {paths.outDir}/*, !{paths.outDir}/css
@@ -46,6 +53,7 @@ const paths = {
         // EXAMPLES
         //'./src/files/**/*.pdf': 'files',              // will output in ./dist/files
         //'./src/FOLDERNAME/*.json': 'js/data',         // will output in ./dist/js/data
+        //'../test.css': 'css',                         // include source from outside of the project
 
         // DON'T DO THIS
         //'./src/FOLDERNAME/*.css': 'css',              // will try to ouput in ./dist/css/.
@@ -57,6 +65,8 @@ const paths = {
         // font files
         './src/fonts/**/*.{ttf,woff,woff2,eof,svg}': 'fonts',
         './bower_components/font-awesome/fonts/**/*.{ttf,woff,woff2,eof,svg}': 'fonts',
+
+        '../test.css': 'css',
 
         // image files
         './src/images/**/*.{png,gif,jpg,jpeg,svg}': 'images'
@@ -74,6 +84,7 @@ gulp.task('clean', () => {
 
 gulp.task('other', () => {
     for(let sourcePath in paths.other) {
+        console.log(sourcePath);
         gulp.src(sourcePath)
             .pipe($.watch(sourcePath))
             .pipe($.if((vinyl) => hasFileExtension(vinyl, ['png', 'gif', 'jpg', 'jpeg', 'svg']), $.imagemin()))
@@ -187,6 +198,8 @@ gulp.task('serve', () => {
 });
 
 gulp.task('sync', () => {
+    if(!useBrowserSync) return;
+
     return gulp.src(['./*.{htm,html}', './src/**/*'])
         .pipe($.watch(['./*.{htm,html}', './src/**/*']))
         .pipe($.if(useBrowserSync, browserSync.stream()));
