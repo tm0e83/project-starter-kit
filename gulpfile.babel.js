@@ -13,7 +13,7 @@ import watchify from 'watchify';
 import buffer from 'vinyl-buffer';
 
 const $ = gulpLoadPlugins();
-const useBrowserSync = true;
+const useBrowserSync = false;
 const devEnvironment = 'local'; // local|zend
 const paths = {
     /* Output directory */
@@ -177,7 +177,7 @@ gulp.task('serve', () => {
             break;
         case 'dev':
             browserSyncOptions = {
-                proxy: 'http://www.dedere.local/website'
+                proxy: 'http://www.your-local-dev-environment.com/'
             }
             break;
         default: return;
