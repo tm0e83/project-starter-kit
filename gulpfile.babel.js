@@ -96,6 +96,7 @@ gulp.task('other', () => {
 gulp.task('sass', () => {
     gulp.src('./src/scss/**/*.scss')
         .pipe($.watch('./src/scss/**/*.scss', (vinyl) => {
+            // delete file in target folder when source file is deleted
             let sassPath = vinyl.path.split('src\\scss\\').pop().replace('\\', '/');
             del(paths.outDir + '/css/' + sassPath.replace(/\.scss$/, '') + '.{css,css.map}');
             gulp.start('scss');
