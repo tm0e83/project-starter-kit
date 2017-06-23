@@ -82,7 +82,6 @@ gulp.task('clean', () => {
 
 gulp.task('other', () => {
     for(let sourcePath in paths.other) {
-        console.log(sourcePath);
         gulp.src(sourcePath)
             .pipe($.watch(sourcePath))
             .pipe($.if((vinyl) => hasFileExtension(vinyl, ['png', 'gif', 'jpg', 'jpeg', 'svg']), $.imagemin()))
