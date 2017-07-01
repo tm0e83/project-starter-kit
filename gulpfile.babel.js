@@ -153,7 +153,6 @@ gulp.task('js', () => {
             return browserifyWatch.bundle()
                 .on('error', (err) => {
                     console.log(err.toString());
-                    this.emit('end');
                 })
                 .pipe(source(src.split('/').pop()))
                 .pipe(buffer())
