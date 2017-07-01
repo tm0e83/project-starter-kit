@@ -151,6 +151,10 @@ gulp.task('js', () => {
         const rebundle = () => {
             console.log('bundling ' + src);
             return browserifyWatch.bundle()
+                .on('error', (err) => {
+                    console.log(err.toString());
+                    this.emit('end');
+                })
                 .pipe(source(src.split('/').pop()))
                 .pipe(buffer())
                 .pipe($.sourcemaps.init({loadMaps: true}))
