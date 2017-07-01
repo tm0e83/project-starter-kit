@@ -87,8 +87,7 @@ gulp.task('other', () => {
             .pipe($.if((vinyl) => hasFileExtension(vinyl, ['png', 'gif', 'jpg', 'jpeg', 'svg']), $.imagemin()))
             .pipe($.if((vinyl) => hasFileExtension(vinyl, ['css']), $.cleanCss()))
             .pipe($.cleanDest(paths.outDir + '/' + paths.other[sourcePath]))
-            .pipe(gulp.dest(paths.outDir + '/' + paths.other[sourcePath]))
-            .pipe($.if(useBrowserSync, browserSync.stream()));
+            .pipe(gulp.dest(paths.outDir + '/' + paths.other[sourcePath]));
     }
 });
 
