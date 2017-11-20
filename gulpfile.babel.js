@@ -27,9 +27,9 @@ const paths = {
      * allowed file types: *.scss
      * outDir: {paths.outDir}/css */
     sassImports: [
-        './bower_components/foundation-sites/scss',
-        './bower_components/motion-ui/src',
-        './bower_components/font-awesome/scss'
+        './node_modules/foundation-sites/scss'
+        // './node_modules/motion-ui/src',
+        // './node_modules/font-awesome/scss'
     ],
 
     /* Javascript files
@@ -59,12 +59,12 @@ const paths = {
         //'./src/FOLDERNAME/*.css': 'css',              // will try to ouput in ./dist/css/.
                                                         // don't use dist/css as your output folder!
         // js files
-        './bower_components/jquery/dist/jquery.min.js': 'js/lib',
-        './bower_components/foundation-sites/dist/js/foundation.min.js': 'js/lib',
+        './node_modules/jquery/dist/jquery.min.js': 'js/lib',
+        './node_modules/foundation-sites/dist/js/foundation.min.js': 'js/lib',
 
         // font files
         './src/fonts/**/*.{ttf,woff,woff2,eof,svg}': 'fonts',
-        './bower_components/font-awesome/fonts/**/*.{ttf,woff,woff2,eof,svg}': 'fonts',
+        './node_modules/font-awesome/fonts/**/*.{ttf,woff,woff2,eof,svg}': 'fonts',
 
         // image files
         './src/images/**/*.{png,gif,jpg,jpeg,svg}': 'images'
