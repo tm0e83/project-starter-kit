@@ -2,11 +2,9 @@ module.exports = function (api) {
   api.cache(true);
 
   const presets = [
-    ["@babel/preset-env", {
-      "useBuiltIns": "entry"
-    }]
+    ['@babel/preset-env']
   ];
-  const plugins = [];
+  const plugins = ['@babel/plugin-syntax-dynamic-import'];
 
   return {
     presets,
