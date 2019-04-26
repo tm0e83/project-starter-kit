@@ -1,7 +1,7 @@
 @charset 'utf-8';
 
-// @import 'settings';
-// @import 'foundation';
+// @import '~foundation-sites/scss/settings/settings';
+// @import '~foundation-sites/scss/foundation';
 // @import 'motion-ui';
 
 // @include foundation-global-styles;
@@ -51,25 +51,3 @@
 // @include foundation-prototype-classes;
 // @include motion-ui-transitions;
 // @include motion-ui-animations;
-
-@import 'test.scss';
-
-.box {
-  background-color: blue;
-  width: 200px;
-  height: 200px;
-}
-
-body {
-  p {
-    text-transform:uppercase;
-  }
-}
-
-.light-gray {
-  background-color: #eaeaea;
-}
-
-body {
-  background-color: #eaeaea;
-}

@@ -1,2 +1,7 @@
-@import 'project';
-@import 'labamba';
+// @import 'settings';
+// @import 'foundation';
+
+// Load custom Foundation variables
+@import "./settings";
+// Load Foundation
+@import "~foundation-sites/scss/foundation";

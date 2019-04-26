@@ -23,26 +23,31 @@ module.exports = [
      */
     devtool: 'source-map',
 
+    externals: [
+      'foundation-sites'
+    ],
+
     entry: {
       /**
        * JS files
        * {target path} : {base path}
+       * e.g. './css/app.js': './scss/app.js',
        */
       './js/app.js': './js/app.js',
-      './js/bumes.js': './js/bumes.js',
       './js/dog.js': './js/dog.js',
 
       /**
        * SCSS files
        * {target path} : {base path}
+       * e.g. './css/app.css': './scss/app.scss',
        */
       './css/app.css': './scss/app.scss',
-      './css/labamba.css': './scss/labamba.scss'
     },
+
     output: {
       path: path.resolve(__dirname, 'dist'),
       publicPath: 'dist/js/',
-      filename: '[name].js',
+      filename: '[name]',
     },
     module: {
       rules: [
@@ -88,7 +93,12 @@ module.exports = [
                 ]
               }
             },
-            'sass-loader'
+            {
+              loader: 'sass-loader',
+              options: {
+                includePaths: [path.resolve(__dirname, 'node_modules')]
+              }
+            }
           ]
         }
       ],
@@ -111,8 +121,8 @@ module.exports = [
       new FixStyleOnlyEntriesPlugin(),
 
       new MiniCssExtractPlugin({
-        filename: './[name].css',
-        chunkFilename: './[id].css',
+        filename: './[name]',
+        chunkFilename: './[id]',
       }),
 
       /**
