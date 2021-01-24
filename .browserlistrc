@@ -1,0 +1,6 @@
+# Browsers that we support
+
+IE 11
+not IE 10
+> ios_saf 10
+> safari 10
