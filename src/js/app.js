@@ -1,3 +1,1 @@
-import('./dog.js').then(r => {
-  console.log(r);
-});
+import '../scss/app.scss';
