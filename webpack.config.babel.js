@@ -15,41 +15,41 @@ import imageminGifsicle from 'imagemin-gifsicle';
 import FriendlyErrorsWebpackPlugin from 'friendly-errors-webpack-plugin';
 
 /**
- * JS entry points
- * {target path} : {base path}
- * e.g. './js/app': './js/app.js',
- * IMPORTANT: Omit target file extension!
- */
+* JS entry points
+* {target path} : {base path}
+* e.g. './js/app': './js/app.js',
+* IMPORTANT: Omit target file extension!
+*/
 const entries = {
-  'app': './src/js/app.js',
+  'app': './js/app.js',
 }
 
 console.log('### Entries ###');
 console.log(Object.values(entries));
 
 module.exports = [{
-  mode: 'development',
+  mode: 'production',
   target: ['web', 'es5'],
 
   resolve: {
     alias: {
-      // 'application': path.resolve(__dirname, './../application'),
+      'app': path.resolve(__dirname, './'),
     }
   },
 
   /**
-   * Enable sourcemaps for debugging webpack's output.
-   */
+  * Enable sourcemaps for debugging webpack's output.
+  */
   devtool: 'source-map',
 
   /**
-   * Webpack watches for changes
-   */
+  * Webpack watches for changes
+  */
   watch: true,
 
   /**
-   * Terminal log settings
-   */
+  * Terminal log settings
+  */
   stats: {
     all: false,
     errors: true,
@@ -57,6 +57,7 @@ module.exports = [{
   },
 
   entry: entries,
+  context: path.resolve(__dirname, 'src'),
 
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -77,6 +78,7 @@ module.exports = [{
           }
         }],
       },
+
       {
         test: /\.css$/i,
         use: [{
@@ -89,11 +91,12 @@ module.exports = [{
           {
             loader: MiniCssExtractPlugin.loader
           },
-          'extract-loader',
+          // 'extract-loader',
           'css-loader',
           'postcss-loader'
-        ],
+        ]
       },
+
       {
         test: /\.scss$/i,
         use: [{
@@ -143,57 +146,58 @@ module.exports = [{
         ]
       },
 
-      // Font Resources in node_modules
       {
-        test: /\.(eot|otf|svg|ttf|woff|woff2)$/i,
-        loader: 'file-loader',
-        include: [/node_modules\\@fortawesome/, /node_modules\\flag-icon-css/],
-        options: {
-          name: '[name].[ext]',
-          outputPath: (url, resourcePath, context) => {
-            if (resourcePath.match('flag-icon-css') !== null) {
-              if (resourcePath.match('1x1') !== null) {
-                return `images/icons/flags/1x1/${url}`;
-              } else {
-                return `images/icons/flags/4x3/${url}`;
-              }
-            } else if (resourcePath.match('fontawesome') !== null) {
-              return `./fonts/${url}`;
+        test: /\.(png|svg|jpe?g|gif)$/i,
+        type: 'asset/resource',
+        include: /src\\images/,
+        generator: {
+          filename: '[path][name][ext]'
+        }
+      },
+
+      {
+        test: /flag-icon-css\\flags\\.*\.svg$/i,
+        type: 'asset/resource',
+        include: /node_modules/,
+        generator: {
+          filename: (file) => {
+            if (file.filename.match('1x1') !== null) {
+              return `images/icons/flags/1x1/[name][ext]`;
+            } else {
+              return `images/icons/flags/4x3/[name][ext]`;
             }
           }
         }
       },
 
-      // Image Resources in src/images
       {
-        test: /\.(png|svg|jpe?g|gif)$/,
-        loader: 'file-loader',
-        include: /src\\images/,
-        options: {
-          name: '[name].[ext]',
-          outputPath: 'images'
+        test: /@fortawesome\\.*\.(eot|otf|svg|ttf|woff|woff2)$/i,
+        type: 'asset/resource',
+        include: /node_modules/,
+        generator: {
+          filename: 'fonts/[name][ext]'
         }
       },
 
-      // Font Resource in src/fonts
       {
-        test: /\.(eot|otf|svg|ttf|woff|woff2)$/i,
-        loader: 'file-loader',
-        include: /src\\fonts/,
-        options: {
-          name: '[name].[ext]',
-          outputPath: 'fonts'
+        type: 'asset/resource',
+        include: [/src\\files/, /src\\fonts/],
+        generator: {
+          filename: '[path][name][ext]'
         }
-      }
+      },
     ]
   },
   optimization: {
     splitChunks: {
       chunks: 'async',
+      // minSize: 30000,
+      // maxSize: 0,
       minChunks: 1,
       maxAsyncRequests: 5,
       maxInitialRequests: 3,
       automaticNameDelimiter: '~',
+      // name: true,
       cacheGroups: {
         defaultVendors: {
           test: /[\\/]node_modules[\\/]/,
@@ -209,12 +213,10 @@ module.exports = [{
     minimize: true,
     minimizer: [
       /**
-       * minify Javascript files
-       */
+      * minify Javascript files
+      */
       new TerserPlugin({
-        // cache: true,
         parallel: true,
-        // sourceMap: true,
         extractComments: false,
         test: /\.js(\?.*)?$/i,
         terserOptions: {
@@ -234,197 +236,193 @@ module.exports = [{
     new FriendlyErrorsWebpackPlugin(),
 
     /**
-     * use the copy plugin for plain copying files (e.g. vendor files) to the dist folder
-     * the files won't be compiled, minified, etc.
-     */
-
+    * use the copy plugin for plain copying files (e.g. vendor files) to the dist folder
+    * the files won't be compiled, minified, etc.
+    */
     // new CopyWebpackPlugin({
     //   patterns: [
-    //     {
-    //       context: path.resolve(__dirname, 'src/images/').replace(/\\/g, '/'),
-    //       from: '**/*.{gif,jpg,jpeg,png,svg}',
-    //       to: path.resolve(__dirname, 'dist/images/'),
-    //       noErrorOnMissing: false,
-    //     },
-
     //     // General
     //     {
-    //       from: './node_modules/sourcemapped-stacktrace/dist/sourcemapped-stacktrace.js',
+    //       from: '../node_modules/sourcemapped-stacktrace/dist/sourcemapped-stacktrace.js',
     //       to: path.resolve(__dirname, 'dist/js/lib/')
     //     },
     //     {
-    //       from: './node_modules/jquery/dist/jquery.min.js',
+    //       from: '../node_modules/jquery/dist/jquery.min.js',
     //       to: path.resolve(__dirname, 'dist/js/lib/')
     //     },
     //     {
-    //       from: './node_modules/foundation-sites/dist/js/foundation.min.js',
+    //       from: '../node_modules/foundation-sites/dist/js/foundation.min.js',
     //       to: path.resolve(__dirname, 'dist/js/lib/')
     //     },
     //     {
-    //       from: './node_modules/foundation-sites/dist/js/plugins/foundation.equalizer.min.js',
+    //       from: '../node_modules/foundation-sites/dist/js/plugins/foundation.equalizer.min.js',
     //       to: path.resolve(__dirname, 'dist/js/lib/')
     //     },
     //     {
-    //       from: './node_modules/chart.js/dist/Chart.min.js',
+    //       from: '../node_modules/chart.js/dist/Chart.min.js',
     //       to: path.resolve(__dirname, 'dist/js/lib')
     //     },
     //     {
-    //       from: './node_modules/blazy/blazy.min.js',
+    //       from: '../node_modules/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js',
+    //       to: path.resolve(__dirname, 'dist/js/lib')
+    //     },
+    //     {
+    //       from: '../node_modules/blazy/blazy.min.js',
     //       to: path.resolve(__dirname, 'dist/js/lib')
     //     },
 
     //     // Webcomponents Loader
     //     {
-    //       from: './node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js',
+    //       from: '../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js',
     //       to: path.resolve(__dirname, 'dist/js/lib/webcomponentsjs')
     //     },
     //     {
-    //       from: './node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js',
+    //       from: '../node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js',
     //       to: path.resolve(__dirname, 'dist/js/lib/webcomponentsjs')
     //     },
     //     {
-    //       from: './node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js',
+    //       from: '../node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js',
     //       to: path.resolve(__dirname, 'dist/js/lib/webcomponentsjs')
     //     },
     //     {
-    //       context: './node_modules/@webcomponents/webcomponentsjs/bundles/',
+    //       context: '../node_modules/@webcomponents/webcomponentsjs/bundles/',
     //       from: '**/*.{js,map}',
     //       to: path.resolve(__dirname, 'dist/js/lib/webcomponentsjs/bundles')
     //     },
 
     //     // Moment.js
     //     {
-    //       from: './node_modules/moment/min/moment.min.js',
+    //       from: '../node_modules/moment/min/moment.min.js',
     //       to: path.resolve(__dirname, 'dist/js/lib/moment/')
     //     },
     //     {
-    //       context: './node_modules/moment/locale/',
+    //       context: '../node_modules/moment/locale/',
     //       from: '*.js',
     //       to: path.resolve(__dirname, 'dist/js/lib/moment/locale/')
     //     },
 
+    //     // Glide Slider
+    //     {
+    //       from: '../node_modules/cropperjs/dist/cropper.esm.js',
+    //       to: path.resolve(__dirname, 'dist/lib/cropperjs/')
+    //     },
+    //     {
+    //       from: '../node_modules/cropperjs/dist/cropper.min.css',
+    //       to: path.resolve(__dirname, 'dist/lib/cropperjs/')
+    //     },
+
     //     // noUiSlider - Range Slider
     //     {
-    //       from: './node_modules/nouislider/distribute/nouislider.min.css',
+    //       from: '../node_modules/nouislider/dist/nouislider.min.css',
     //       to: path.resolve(__dirname, 'dist/lib/nouislider/')
     //     },
     //     {
-    //       from: './node_modules/nouislider/distribute/nouislider.min.js',
+    //       from: '../node_modules/nouislider/dist/nouislider.min.js',
     //       to: path.resolve(__dirname, 'dist/lib/nouislider/')
     //     },
 
     //     // (DEPRECATED! use Splide Slider instead!)
     //     // Slick Slider Carousel
     //     {
-    //       from: './node_modules/slick-carousel/slick/slick.min.js',
+    //       from: '../node_modules/slick-carousel/slick/slick.min.js',
     //       to: path.resolve(__dirname, 'dist/js/lib/slick/')
     //     },
     //     {
-    //       from: './node_modules/slick-carousel/slick/slick.css',
+    //       from: '../node_modules/slick-carousel/slick/slick.css',
     //       to: path.resolve(__dirname, 'dist/js/lib/slick/')
     //     },
 
     //     // Glide Slider
     //     {
-    //       from: './node_modules/@glidejs/glide/dist/glide.min.js',
+    //       from: '../node_modules/@glidejs/glide/dist/glide.min.js',
     //       to: path.resolve(__dirname, 'dist/lib/glide/')
     //     },
     //     {
-    //       from: './node_modules/@glidejs/glide/dist/css/glide.core.min.css',
+    //       from: '../node_modules/@glidejs/glide/dist/css/glide.core.min.css',
     //       to: path.resolve(__dirname, 'dist/lib/glide/')
-    //     },
-
-    //     // Splide Slider
-    //     {
-    //       from: './node_modules/@splidejs/splide/dist/js/splide.min.js',
-    //       to: path.resolve(__dirname, 'dist/lib/splide/')
-    //     },
-    //     {
-    //       from: './node_modules/@splidejs/splide/dist/css/splide.min.css',
-    //       to: path.resolve(__dirname, 'dist/lib/splide/')
     //     },
 
     //     // Plyr Media Player
     //     {
-    //       from: './node_modules/plyr/dist/plyr.min.js',
+    //       from: '../node_modules/plyr/dist/plyr.min.js',
     //       to: path.resolve(__dirname, 'dist/plyr/')
     //     },
     //     {
-    //       from: './node_modules/plyr/dist/plyr.css',
+    //       from: '../node_modules/plyr/dist/plyr.css',
     //       to: path.resolve(__dirname, 'dist/plyr/')
     //     },
 
     //     // Flatpickr
     //     {
-    //       from: './node_modules/flatpickr/dist/flatpickr.min.js',
+    //       from: '../node_modules/flatpickr/dist/flatpickr.min.js',
     //       to: path.resolve(__dirname, 'dist/flatpickr/')
     //     },
     //     {
-    //       from: './node_modules/flatpickr/dist/flatpickr.min.css',
+    //       from: '../node_modules/flatpickr/dist/flatpickr.min.css',
     //       to: path.resolve(__dirname, 'dist/flatpickr/')
     //     },
     //     {
-    //       context: './node_modules/flatpickr/dist/l10n/',
+    //       context: '../node_modules/flatpickr/dist/l10n/',
     //       from: '**/*',
     //       to: path.resolve(__dirname, 'dist/flatpickr/l10n/')
     //     },
 
     //     // Datatables
     //     {
-    //       from: './node_modules/datatables.net/js/jquery.dataTables.min.js',
+    //       from: '../node_modules/datatables.net/js/jquery.dataTables.min.js',
     //       to: path.resolve(__dirname, 'dist/datatables/js/')
     //     },
     //     {
-    //       from: './node_modules/datatables.net-dt/css/jquery.dataTables.min.css',
+    //       from: '../node_modules/datatables.net-dt/css/jquery.dataTables.min.css',
     //       to: path.resolve(__dirname, 'dist/datatables/css/')
     //     },
     //     {
-    //       context: './node_modules/datatables.net-dt/images/',
+    //       context: '../node_modules/datatables.net-dt/images/',
     //       from: '**/*.{png,gif,jpg,jpeg,svg}',
     //       to: path.resolve(__dirname, 'dist/datatables/images/')
     //     },
 
     //     // TinyMCE
     //     {
-    //       from: './node_modules/tinymce/tinymce.min.js',
+    //       from: '../node_modules/tinymce/tinymce.min.js',
     //       to: path.resolve(__dirname, 'dist/tinymce/')
     //     },
     //     {
-    //       context: './node_modules/tinymce/themes/',
+    //       context: '../node_modules/tinymce/themes/',
     //       from: '**/*',
     //       to: path.resolve(__dirname, 'dist/tinymce/themes/')
     //     },
     //     {
-    //       from: './node_modules/tinymce/plugins/paste/plugin.min.js',
+    //       from: '../node_modules/tinymce/plugins/paste/plugin.min.js',
     //       to: path.resolve(__dirname, 'dist/tinymce/plugins/paste/')
     //     },
     //     {
-    //       context: './node_modules/tinymce-i18n/langs/',
+    //       context: '../node_modules/tinymce-i18n/langs/',
     //       from: '**/*',
     //       to: path.resolve(__dirname, 'dist/tinymce/i18n/')
     //     },
     //     {
-    //       context: './node_modules/tinymce/skins/',
+    //       context: '../node_modules/tinymce/skins/',
     //       from: '**/*',
     //       to: path.resolve(__dirname, 'dist/tinymce/skins/')
     //     },
 
     //     // Vis Timeline
     //     {
-    //       from: './node_modules/vis-timeline/dist/vis-timeline-graph2d.min.js',
+    //       from: '../node_modules/vis-timeline/dist/vis-timeline-graph2d.min.js',
     //       to: path.resolve(__dirname, 'dist/vis-timeline/')
     //     },
     //     {
-    //       from: './node_modules/vis-timeline/dist/vis-timeline-graph2d.min.css',
+    //       from: '../node_modules/vis-timeline/dist/vis-timeline-graph2d.min.css',
     //       to: path.resolve(__dirname, 'dist/vis-timeline/')
-    //   }],
+    //   }
+    //   ],
     //   options: {}
     // }),
 
     new MiniCssExtractPlugin({
       filename: 'css/[name].css',
       chunkFilename: 'css/[id].css',
-      // publicPath: '../css'
     }),
 
     // new JsDocPlugin({
@@ -435,8 +433,8 @@ module.exports = [{
     // }),
 
     /**
-     * Make sure that the plugin runs after any plugin that adds images (e.g. CopyWebpackPlugin)
-     */
+    * Make sure that the plugin runs after any plugin that adds images (e.g. CopyWebpackPlugin)
+    */
     new ImageminPlugin({
       test: /\.(jpe?g|png|gif|svg)$/i,
       context: 'images/',
@@ -453,5 +451,6 @@ module.exports = [{
         })
       ]
     })
+
   ]
 }];

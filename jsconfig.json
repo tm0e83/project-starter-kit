@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "paths": {
-      "application/*": ["./../application/*"]
     }
   },
   "exclude": ["node_modules"]

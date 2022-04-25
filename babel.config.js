@@ -5,13 +5,12 @@ module.exports = function (api) {
     [
       '@babel/preset-env',
       {
-        "targets": {
-          "ie": "11"
+        targets: {
+            ie: 11,
         }
       }
     ]
   ];
-
   const plugins = ['@babel/plugin-syntax-dynamic-import'];
 
   return {
